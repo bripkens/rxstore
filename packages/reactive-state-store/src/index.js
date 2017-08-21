@@ -1,10 +1,23 @@
 const {createStore} = require('./store');
 
+let it1, it2;
+
 const counterStore = createStore({
   name: `counter`,
 
   getInitialState() {
     return 0;
+  },
+
+  onStart({increment, decrement}) {
+    increment(2);
+    it1 = setInterval(() => counterStore.actions.increment(5), 1000);
+    it2 = setInterval(() => counterStore.actions.decrement(3), 1000);
+  },
+
+  onStop() {
+    clearInterval(it1);
+    clearInterval(it2);
   },
 
   actions: {
@@ -20,6 +33,9 @@ const counterStore = createStore({
   }
 });
 
-counterStore.observable.subscribe(v => console.log('value: ', v));
-setInterval(() => counterStore.actions.increment(5), 1000);
-setInterval(() => counterStore.actions.decrement(3), 1000);
+const subscription = counterStore.observable.subscribe(v => {
+  console.log('value: ', v);
+  if (v > 10) {
+    subscription.unsubscribe();
+  }
+});
