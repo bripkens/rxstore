@@ -1,37 +1,87 @@
-const {createStore} = require('./store');
+const {ReplaySubject} = require('rxjs/ReplaySubject');
+const {Observable} = require('rxjs/Observable');
+const {Subject} = require('rxjs/Subject');
+require('rxjs/add/operator/distinctUntilChanged');
+require('rxjs/add/operator/multicast');
+require('rxjs/add/operator/merge');
+require('rxjs/add/operator/scan');
+require('rxjs/add/operator/do');
 
-const counterStore = createStore({
-  // give the store a name under which it is available globally for dev tools
-  name: `counter`,
+const noop = () => {};
 
-  getInitialState() {
-    return 0;
-  },
+const storeStates = {};
+exports.getStoreStates = () => storeStates;
 
-  onStart({increment, decrement}) {
-    // do something when the first subscriber subscribes to this store
-  },
 
-  onStop() {
-    // do something when the last subscriber unsubscribes from this store
-  },
-
-  actions: {
-    increment(currentState, n=1) {
-      return currentState + n;
-    },
-
-    decrement(currentState, n=1) {
-      return currentState - n;
-    }
+let onUncaughtError = defaultUncaughtErrorHandler;
+exports.setUncaughtErrorHandler = _onUncaughtError => onUncaughtError = _onUncaughtError || defaultUncaughtErrorHandler;
+function defaultUncaughtErrorHandler(location, e, state, actioName, args) {
+  if (typeof console === 'undefined') {
+    return;
   }
-});
 
-// how to use it outside of react
-counterStore.observable.subscribe(v => {
-  console.log('value: ', v);
-});
+  if (arguments.length === 2) {
+    console.error('Unhandled error in', location, 'Error:', e);
+  } else {
+    console.error('Unhandled error in', location, 'Error:', e, 'Previous State:', state, 'Action name:', actioName, 'Action args:', args);
+  }
+}
 
-// how to execute actions
-counterStore.actions.increment(3);
-counterStore.actions.decrement(2);
+
+exports.createStore = ({name, actions, onStart=noop, onStop=noop, getInitialState}) => {
+  const state$ = new ReplaySubject(1);
+  let state = storeStates[name] = getInitialState();
+  state$.next(state);
+
+  const exposedActions = Object.keys(actions)
+    .reduce((reducedExposedActions, actionName) => {
+      const actionHandler = actions[actionName];
+      reducedExposedActions[actionName] = (...args) => {
+        args = args.slice();
+        args.unshift(state);
+        try {
+          const nextState = actions[actionName].apply(null, args);
+          if (nextState !== state) {
+            state = storeStates[name] = nextState;
+            state$.next(nextState);
+          }
+        } catch (e) {
+          onUncaughtError('state transition', e, currentState, actioName, args);
+        }
+      };
+      return reducedExposedActions;
+    }, {});
+
+  const exposedObservable$ = state$
+    .merge(
+      // multicast source observable to implement start/stop
+      Observable.create(_observer => {
+        try {
+          onStart(exposedActions);
+        } catch (e) {
+          onUncaughtError('onStart', e);
+        }
+        return () => {
+          try {
+            onStop(exposedActions);
+          } catch (e) {
+            onUncaughtError('onStop', e);
+          }
+        };
+      }))
+    .multicast(new ReplaySubject(1))
+    .refCount();
+
+  return {
+    name,
+    observable: exposedObservable$,
+    actions: exposedActions
+  };
+};
+
+
+exports.createTrackingStore = ({name, observable}) => {
+  return {
+    observable: observable.multicast(new ReplaySubject(1)).refCount().distinctUntilChanged()
+  }
+};
