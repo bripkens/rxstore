@@ -1,3 +1,6 @@
+/* eslint-disable space-before-function-paren */
+/* eslint-env jest */
+
 const { Subject } = require('rxjs/Subject');
 require('rxjs/add/operator/map');
 const { stub } = require('sinon');
@@ -19,6 +22,8 @@ describe('stores', () => {
     let counterStore;
     let onStart;
     let onStop;
+    let incrementCalls;
+    let decrementCalls;
 
     beforeEach(() => {
       onStart = stub();

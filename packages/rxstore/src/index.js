@@ -1,6 +1,7 @@
+/* eslint-disable space-before-function-paren */
+
 const { ReplaySubject } = require('rxjs/ReplaySubject');
 const { Observable } = require('rxjs/Observable');
-const { Subject } = require('rxjs/Subject');
 require('rxjs/add/operator/distinctUntilChanged');
 require('rxjs/add/operator/multicast');
 require('rxjs/add/operator/merge');
@@ -44,7 +45,6 @@ exports.createStore = ({ name, actions, onStart = noop, onStop = noop, getInitia
   state$.next(state);
 
   const exposedActions = Object.keys(actions).reduce((reducedExposedActions, actionName) => {
-    const actionHandler = actions[actionName];
     reducedExposedActions[actionName] = (...args) => {
       args = args.slice();
       args.unshift(state);
