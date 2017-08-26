@@ -1,16 +1,21 @@
 {
-  "name": "@bripkens/rxstore-main",
+  "name": "@bripkens/rxstore-parent",
   "version": "1.0.0",
   "description": "",
   "private": true,
   "scripts": {
+    "postinstall": "lerna bootstrap",
     "test:unit": "lerna run test:unit",
     "test:lint": "semistandard",
+    "build": "lerna run build",
     "precommit": "npm run test:unit && npm run test:lint && npm run reformat && git add .",
     "reformat": "prettier --print-width 120 --single-quote --write packages/*/src/**/*.js packages/*/test/**/*.js"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
     "husky": "^0.14.3",
+    "jest": "^20.0.4",
     "lerna": "^2.0.0",
     "prettier": "^1.5.3",
     "semistandard": "^11.0.0"

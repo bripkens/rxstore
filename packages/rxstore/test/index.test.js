@@ -5,7 +5,7 @@ const { Subject } = require('rxjs/Subject');
 require('rxjs/add/operator/map');
 const { stub } = require('sinon');
 
-const { createStore, createTrackingStore, getStoreStates, setUncaughtErrorHandler } = require('..');
+const { createStore, createTrackingStore, getStoreStates, setUncaughtErrorHandler } = require('../src');
 
 describe('stores', () => {
   let testObserver;
