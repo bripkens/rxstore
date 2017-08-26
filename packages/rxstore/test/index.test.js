@@ -1,7 +1,10 @@
-const {createStore, createTrackingStore, getStoreStates, setUncaughtErrorHandler} = require('..');
-const {stub} = require('sinon');
+const { Subject } = require('rxjs/Subject');
+require('rxjs/add/operator/map');
+const { stub } = require('sinon');
 
-describe('createStore', () => {
+const { createStore, createTrackingStore, getStoreStates, setUncaughtErrorHandler } = require('..');
+
+describe('stores', () => {
   let testObserver;
 
   beforeEach(() => {
@@ -12,7 +15,7 @@ describe('createStore', () => {
     setUncaughtErrorHandler(null); // reset to default
   });
 
-  describe('counter store', () => {
+  describe('createStore', () => {
     let counterStore;
     let onStart;
     let onStop;
@@ -22,7 +25,7 @@ describe('createStore', () => {
       onStop = stub();
       incrementCalls = stub();
       decrementCalls = stub();
-      counterStore = createCounterStore({onStart, onStop, incrementCalls, decrementCalls});
+      counterStore = createCounterStore({ onStart, onStop, incrementCalls, decrementCalls });
     });
 
     test('initial state must emit immediately', () => {
@@ -104,6 +107,83 @@ describe('createStore', () => {
       expect(testObserver.next.callCount).toEqual(1);
       expect(testObserver.next.getCall(0).args).toEqual([0]);
     });
+
+    describe('uncaught errors', () => {
+      let onUncaughtError;
+
+      beforeEach(() => {
+        onUncaughtError = stub();
+        setUncaughtErrorHandler(onUncaughtError);
+      });
+
+      test('report onStart uncaught error', () => {
+        onStart.throws('on purpose error');
+        counterStore.observable.subscribe(testObserver);
+        expect(onUncaughtError.callCount).toEqual(1);
+      });
+
+      test('report onStop uncaught error', () => {
+        onStop.throws('on purpose error');
+        counterStore.observable.subscribe(testObserver).unsubscribe();
+        expect(onUncaughtError.callCount).toEqual(1);
+      });
+
+      test('report action handler uncaught error', () => {
+        incrementCalls.throws('on purpose error');
+        counterStore.observable.subscribe(testObserver);
+        expect(testObserver.next.callCount).toEqual(1);
+        expect(testObserver.next.getCall(0).args).toEqual([0]);
+        expect(onUncaughtError.callCount).toEqual(0);
+        counterStore.actions.increment(2);
+        expect(testObserver.next.callCount).toEqual(1);
+        expect(onUncaughtError.callCount).toEqual(1);
+      });
+    });
+  });
+
+  describe('createTrackingStore', () => {
+    let upstream$;
+    let mapCalls;
+    let store;
+
+    beforeEach(() => {
+      upstream$ = new Subject();
+      mapCalls = stub();
+      store = createTrackingStore({
+        name: 'pwnd counter',
+        observable: upstream$.map(v => {
+          mapCalls(v);
+          return Math.pow(v, 2);
+        })
+      });
+    });
+
+    test('pass through source observable', () => {
+      store.observable.subscribe(testObserver);
+      expect(testObserver.next.callCount).toEqual(0);
+      upstream$.next(3);
+      expect(testObserver.next.callCount).toEqual(1);
+      expect(testObserver.next.getCall(0).args).toEqual([9]);
+    });
+
+    test('subsequent subscribers must get the last value without requiring recalculation', () => {
+      store.observable.subscribe(testObserver);
+      expect(mapCalls.callCount).toEqual(0);
+      upstream$.next(3);
+      expect(mapCalls.callCount).toEqual(1);
+      const testObserver2 = createTestObserver();
+      store.observable.subscribe(testObserver2);
+      expect(testObserver.next.callCount).toEqual(1);
+      expect(testObserver2.next.callCount).toEqual(1);
+      expect(testObserver2.next.getCall(0).args).toEqual([9]);
+      expect(mapCalls.callCount).toEqual(1);
+    });
+
+    test('expose value for dev tools', () => {
+      store.observable.subscribe(testObserver);
+      upstream$.next(3);
+      expect(getStoreStates()[store.name]).toEqual(9);
+    });
   });
 });
 
@@ -115,8 +195,7 @@ function createTestObserver() {
   };
 }
 
-
-function createCounterStore({onStart, onStop, incrementCalls=() => {}, decrementCalls=() => {}} = {}) {
+function createCounterStore({ onStart, onStop, incrementCalls = () => {}, decrementCalls = () => {} } = {}) {
   return createStore({
     name: 'counter',
 
@@ -128,12 +207,12 @@ function createCounterStore({onStart, onStop, incrementCalls=() => {}, decrement
     onStop,
 
     actions: {
-      increment(currentState, n=1) {
+      increment(currentState, n = 1) {
         incrementCalls(currentState, n);
         return currentState + n;
       },
 
-      decrement(currentState, n=1) {
+      decrement(currentState, n = 1) {
         decrementCalls(currentState, n);
         return currentState - n;
       }

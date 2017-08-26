@@ -1,5 +1,16 @@
 {
-	"devDependencies": {
-		"lerna": "^2.0.0"
-	}
+  "name": "@bripkens/rxstore-main",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test:unit": "lerna run test:unit",
+    "precommit": "npm run test:unit && npm run reformat && git add .",
+    "reformat": "prettier --print-width 120 --single-quote --write packages/*/src/**/*.js packages/*/test/**/*.js"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lerna": "^2.0.0",
+    "prettier": "^1.5.3"
+  }
 }
