@@ -1,8 +1,7 @@
 const {createStore} = require('./store');
 
-let it1, it2;
-
 const counterStore = createStore({
+  // give the store a name under which it is available globally for dev tools
   name: `counter`,
 
   getInitialState() {
@@ -10,32 +9,29 @@ const counterStore = createStore({
   },
 
   onStart({increment, decrement}) {
-    increment(2);
-    it1 = setInterval(() => counterStore.actions.increment(5), 1000);
-    it2 = setInterval(() => counterStore.actions.decrement(3), 1000);
+    // do something when the first subscriber subscribes to this store
   },
 
   onStop() {
-    clearInterval(it1);
-    clearInterval(it2);
+    // do something when the last subscriber unsubscribes from this store
   },
 
   actions: {
     increment(currentState, n=1) {
-      console.log('increment by ', n);
       return currentState + n;
     },
 
     decrement(currentState, n=1) {
-      console.log('decrement by ', n);
       return currentState - n;
     }
   }
 });
 
-const subscription = counterStore.observable.subscribe(v => {
+// how to use it outside of react
+counterStore.observable.subscribe(v => {
   console.log('value: ', v);
-  if (v > 10) {
-    subscription.unsubscribe();
-  }
 });
+
+// how to execute actions
+counterStore.actions.increment(3);
+counterStore.actions.decrement(2);
