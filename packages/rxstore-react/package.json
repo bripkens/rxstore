@@ -1,0 +1,24 @@
+{
+  "name": "@bripkens/rxstore-react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test:unit": "../../node_modules/.bin/jest --coverage",
+    "test:watch": "../../node_modules/.bin/jest --coverage --watch",
+    "build": "mkdir -p dist && ../../node_modules/.bin/babel -o dist/index.js -s true src/index.js"
+  },
+  "author": "Ben Ripkens <bripkens@gmail.com> (http://bripkens.de/)",
+  "license": "MIT",
+  "devDependencies": {
+    "react": ">=15",
+    "@bripkens/rxstore": ">=1"
+  },
+  "peerDependencies": {
+    "react": ">=15",
+    "@bripkens/rxstore": ">=1"
+  },
+  "semistandard": {
+    "parser": "babel-eslint"
+  }
+}
