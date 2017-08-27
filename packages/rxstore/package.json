@@ -10,7 +10,10 @@
     "rx",
     "rxjs"
   ],
-  "files": ["src", "dist"],
+  "files": [
+    "src",
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "http://github.com/bripkens/rxstore.git"
