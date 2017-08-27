@@ -1,11 +1,11 @@
 /* eslint-disable space-before-function-paren */
 
-import { Component } from 'react';
+import React from 'react';
 
 export function connectTo(createObservables, ComposedComponent) {
   const needsToCreateObservablesWhenPropsChange = typeof createObservables === 'function';
 
-  return class extends Component {
+  return class extends React.Component {
     static displayName = 'connectTo for ' + (ComposedComponent.displayName || ComposedComponent.name);
 
     state = {};
@@ -75,7 +75,7 @@ export function connectTo(createObservables, ComposedComponent) {
       this.setState(clearStateProps);
     }
 
-    onNewValue = (value, property) => {
+    onNewValue = (property, value) => {
       this.setState({
         [property]: value
       });

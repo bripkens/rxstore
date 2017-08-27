@@ -11,8 +11,11 @@
   "author": "Ben Ripkens <bripkens@gmail.com> (http://bripkens.de/)",
   "license": "MIT",
   "devDependencies": {
+    "@bripkens/rxstore": ">=1",
+    "babel-jest": "^20.0.3",
     "react": ">=15",
-    "@bripkens/rxstore": ">=1"
+    "react-test-renderer": "^15.6.1",
+    "sinon": "^3.2.1"
   },
   "peerDependencies": {
     "react": ">=15",

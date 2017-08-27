@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`connectTo non-property relying connect 1`] = `
+<div
+  count={0}
+/>
+`;
+
+exports[`connectTo non-property relying connect 2`] = `
+<div
+  count={3}
+/>
+`;
