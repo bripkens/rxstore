@@ -5,10 +5,11 @@
   "private": true,
   "scripts": {
     "postinstall": "lerna bootstrap",
+    "test": "npm run test:unit && npm run test:lint",
     "test:unit": "lerna run test:unit",
     "test:lint": "semistandard",
     "build": "lerna run build",
-    "precommit": "npm run test:unit && npm run test:lint && npm run reformat && git add .",
+    "precommit": "npm run test && npm run reformat && git add .",
     "reformat": "prettier --print-width 120 --single-quote --write packages/*/src/**/*.js packages/*/test/**/*.js"
   },
   "devDependencies": {
@@ -20,5 +21,8 @@
     "lerna": "^2.0.0",
     "prettier": "^1.5.3",
     "semistandard": "^11.0.0"
+  },
+  "semistandard": {
+    "parser": "babel-eslint"
   }
 }

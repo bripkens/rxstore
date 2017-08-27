@@ -17,8 +17,5 @@
   "peerDependencies": {
     "react": ">=15",
     "@bripkens/rxstore": ">=1"
-  },
-  "semistandard": {
-    "parser": "babel-eslint"
   }
 }

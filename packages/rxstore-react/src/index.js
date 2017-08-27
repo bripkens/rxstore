@@ -1,4 +1,6 @@
-import {Component} from 'react';
+/* eslint-disable space-before-function-paren */
+
+import { Component } from 'react';
 
 export function connectTo(createObservables, ComposedComponent) {
   const needsToCreateObservablesWhenPropsChange = typeof createObservables === 'function';
