@@ -1,12 +1,61 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`connectTo non-property relying connect 1`] = `
+exports[`connectTo property depending 1`] = `
+<div
+  count={
+    Array [
+      5,
+      0,
+    ]
+  }
+  n={5}
+/>
+`;
+
+exports[`connectTo property depending 2`] = `
+<div
+  count={
+    Array [
+      5,
+      0,
+      3,
+    ]
+  }
+  n={5}
+/>
+`;
+
+exports[`connectTo property updates must recalculate observables 1`] = `
+<div
+  count={
+    Array [
+      5,
+      0,
+    ]
+  }
+  n={5}
+/>
+`;
+
+exports[`connectTo property updates must recalculate observables 2`] = `
+<div
+  count={
+    Array [
+      3,
+      0,
+    ]
+  }
+  n={3}
+/>
+`;
+
+exports[`connectTo static connect 1`] = `
 <div
   count={0}
 />
 `;
 
-exports[`connectTo non-property relying connect 2`] = `
+exports[`connectTo static connect 2`] = `
 <div
   count={3}
 />
