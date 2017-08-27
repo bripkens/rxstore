@@ -1,8 +1,20 @@
 {
   "name": "@bripkens/rxstore-react",
   "version": "1.0.0",
-  "description": "",
+  "description": "RxJS based stores for highly reactive UIs",
   "main": "dist/index.js",
+  "keyswords": [
+    "stores",
+    "state",
+    "flux",
+    "rx",
+    "rxjs"
+  ],
+  "files": ["src", "dist"],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/bripkens/rxstore.git"
+  },
   "scripts": {
     "test:unit": "../../node_modules/.bin/jest --coverage",
     "test:watch": "../../node_modules/.bin/jest --coverage --watch",
