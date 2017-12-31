@@ -2,7 +2,26 @@
 
 import React from 'react';
 
+// support usage with two and one parameters. This is done so that connectTo can be used
+// easily with recompose and similar hocs.
+//
+// connectTo({…observables}, MyComponent);
+// -and-
+// connectTo({…observables})(MyComponent);
 export function connectTo(createObservables, ComposedComponent) {
+  if (arguments.length > 1) {
+    return createConnectedComponent(createObservables, ComposedComponent);
+  }
+
+  // support
+  return comp => createConnectedComponent(createObservables, comp);
+}
+
+// support an alternative name which follows the recompose naming strategy more
+// closely.
+export const connect = connectTo;
+
+function createConnectedComponent(createObservables, ComposedComponent) {
   const needsToCreateObservablesWhenPropsChange = typeof createObservables === 'function';
 
   return class extends React.Component {

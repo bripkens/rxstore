@@ -7,7 +7,7 @@ import { stub } from 'sinon';
 import React from 'react';
 
 import PropSetter from './PropSetter';
-import { connectTo } from '../src';
+import { connectTo, connect } from '../src';
 
 describe('connectTo', () => {
   let onStart;
@@ -75,6 +75,21 @@ describe('connectTo', () => {
     component.getInstance().setProps({ n: 3 });
     expect(component.toJSON()).toMatchSnapshot();
     expect(connectCalculations.callCount).toEqual(2);
+  });
+
+  test('must support recompose style hoc', () => {
+    const Component = connect({ count: counterStore.observable })(ComposableComponent);
+    const component = renderer.create(<Component />);
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+    expect(render.callCount).toEqual(1);
+
+    counterStore.actions.increment(3);
+    tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+    expect(render.callCount).toEqual(2);
+    expect(onStart.callCount).toEqual(1);
+    expect(onStop.callCount).toEqual(0);
   });
 });
 

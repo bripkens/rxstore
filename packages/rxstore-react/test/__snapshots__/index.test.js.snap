@@ -1,5 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`connectTo must support recompose style hoc 1`] = `
+<div
+  count={0}
+/>
+`;
+
+exports[`connectTo must support recompose style hoc 2`] = `
+<div
+  count={3}
+/>
+`;
+
 exports[`connectTo property depending 1`] = `
 <div
   count={

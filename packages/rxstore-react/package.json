@@ -27,9 +27,9 @@
   "license": "MIT",
   "devDependencies": {
     "@bripkens/rxstore": "^1.0.0",
-    "babel-jest": "^20.0.3",
-    "react": ">=15",
-    "react-test-renderer": "^15.6.1",
+    "babel-jest": "^22.0.4",
+    "react": "^16.0.0",
+    "react-test-renderer": "^16.0.0",
     "sinon": "^3.2.1"
   },
   "peerDependencies": {
