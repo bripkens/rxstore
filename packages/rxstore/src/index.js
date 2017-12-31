@@ -41,8 +41,11 @@ function defaultUncaughtErrorHandler(location, e, state, actioName, args) {
 
 exports.createStore = ({ name, actions, onStart = noop, onStop = noop, getInitialState }) => {
   const state$ = new ReplaySubject(1);
-  let state = (storeStates[name] = getInitialState());
-  state$.next(state);
+  let state = (storeStates[name] = undefined);
+  if (getInitialState != null) {
+    state = storeStates[name] = getInitialState();
+    state$.next(state);
+  }
 
   const exposedActions = Object.keys(actions).reduce((reducedExposedActions, actionName) => {
     reducedExposedActions[actionName] = (...args) => {

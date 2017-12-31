@@ -146,6 +146,43 @@ describe('stores', () => {
     });
   });
 
+  test('must not require a getInitialState function', () => {
+    const setCalls = stub();
+
+    const store = createStore({
+      name: 'without getInitialState',
+
+      actions: {
+        set(current, next) {
+          setCalls(current, next);
+          return next;
+        }
+      }
+    });
+
+    store.observable.subscribe(testObserver);
+    expect(setCalls.callCount).toEqual(0);
+    expect(testObserver.next.callCount).toEqual(0);
+    expect(testObserver.error.callCount).toEqual(0);
+    expect(testObserver.complete.callCount).toEqual(0);
+
+    store.actions.set(42);
+    expect(setCalls.callCount).toEqual(1);
+    expect(setCalls.getCall(0).args).toEqual([undefined, 42]);
+    expect(testObserver.next.callCount).toEqual(1);
+    expect(testObserver.next.getCall(0).args).toEqual([42]);
+    expect(testObserver.error.callCount).toEqual(0);
+    expect(testObserver.complete.callCount).toEqual(0);
+
+    store.actions.set(43);
+    expect(setCalls.callCount).toEqual(2);
+    expect(setCalls.getCall(1).args).toEqual([42, 43]);
+    expect(testObserver.next.callCount).toEqual(2);
+    expect(testObserver.next.getCall(1).args).toEqual([43]);
+    expect(testObserver.error.callCount).toEqual(0);
+    expect(testObserver.complete.callCount).toEqual(0);
+  });
+
   describe('createTrackingStore', () => {
     let upstream$;
     let mapCalls;
